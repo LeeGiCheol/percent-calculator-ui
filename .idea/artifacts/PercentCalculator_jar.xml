@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="PercentCalculator:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/PercentCalculator_jar</output-path>
+    <root id="archive" name="PercentCalculator.jar">
+      <element id="module-output" name="PercentCalculator" />
+    </root>
+  </artifact>
+</component>
