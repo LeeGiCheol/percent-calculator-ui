@@ -2,45 +2,28 @@ package me.gicheol.listener;
 
 import me.gicheol.common.CommonUtils;
 import me.gicheol.domain.Panels;
+import me.gicheol.controller.MessageUpdateDialogController;
+import me.gicheol.controller.PercentCalculatorController;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class ButtonClickListener implements ActionListener {
+public class ButtonClickListener {
 
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("M/d");
-    private Panels panels;
 
+    private final Panels panels;
 
     public ButtonClickListener(Panels panels) {
         this.panels = panels;
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == panels.getSalesAddButton()) {
-            salesAddButtonClickEvent();
-        } else if (e.getSource() == panels.getRemoveButton()) {
-            removeButtonClickEvent();
-        } else if (e.getSource() == panels.getAllRemoveButton()) {
-            allRemoveButtonClickEvent();
-        } else if (e.getSource() == panels.getSubmitButton()) {
-            submitButtonClickEvent();
-        } else if (e.getSource() == panels.getHistoryButton()) {
-            historyButtonClickEvent();
-        } else if (e.getSource() == panels.getMessageUpdateButton()) {
-            messageUpdateButtonClickEvent();
-        }
-    }
-
-    private void salesAddButtonClickEvent() {
-        String text = panels.getSalesAmountField().getText();
+    private void mainSalesAddButtonClickEvent(PercentCalculatorController frame, ActionEvent e) {
+        String text = panels.getMainSalesAmountField().getText();
 
         if (text.length() == 0) {
             JOptionPane.showMessageDialog(null, "매출을 입력하세요.");
@@ -53,38 +36,29 @@ public class ButtonClickListener implements ActionListener {
 
         panels.getSalesAmountList().add(text + "원");
 
-        JTextField salesAmountField = panels.getSalesAmountField();
+        JTextField salesAmountField = panels.getMainSalesAmountField();
         salesAmountField.setText("");
 
-        panels.setSalesAmountField(salesAmountField);
+        panels.setMainSalesAmountField(salesAmountField);
     }
 
-    private void submitButtonClickEvent() {
+    private void mainSubmitButtonClickEvent(PercentCalculatorController frame, ActionEvent e) {
         textAreaRemove();
 
         if (panels.getSalesAmountList().getItemCount() == 0) {
+            JOptionPane.showMessageDialog(null, "매출을 입력하세요.");
             return;
         }
 
-        String amountFee = panels.getSalesAmountFeeField().getText().replaceAll(",", "");
+        String amountFee = panels.getMainSalesAmountFeeField().getText().replaceAll(",", "");
         if (amountFee.equals("")) {
             JOptionPane.showMessageDialog(null, "퍼센트를 입력하세요.");
         }
 
 
-
-        String companyField = "";
-        if (!panels.getCompanyField().getText().equals("")) {
-            companyField = panels.getCompanyField().getText() + "\n";
-        }
-
         String nowDate = LocalDate.now().format(dateFormat);
-        
-        String headerMent = "방송 고생 많으셨습니다 ! 계약된 방송건이 모두 종료되어 수수료정산 관련 안내 드립니다!";
-        String footerMent = "세금계산거 발행금액으로, 메일로 발행해드렸습니다! 하기 계좌번호로 입금 부탁드리겠습니다.";
 
         StringBuilder amount = new StringBuilder();
-
 
         List amountList = panels.getSalesAmountList();
         Long sumAmount = 0L;
@@ -99,59 +73,61 @@ public class ButtonClickListener implements ActionListener {
             amount.append(item).append("|");
         }
 
-
-
         BigDecimal percent = CommonUtils.getPercent(sumAmount, amountFee);
         BigDecimal resultAmount = CommonUtils.getResultAmount(percent);
 
-        StringBuilder result = resultMessage(companyField, headerMent, nowDate, sumAmount, amountFee, percent, resultAmount, footerMent);
+        StringBuilder result = resultMessage(nowDate, amountSB, sumAmount, amountFee, percent, resultAmount);
 
-        panels.getResultTextArea().append(result.toString());
+        panels.getMainResultTextArea().append(result.toString());
         panels.getHistory().add(result.toString());
 
         String amountAppend = amountAppend(amount);
 
-        StringBuilder verification = verificationMessage(companyField, nowDate, amountSB, amountAppend, sumAmount, amountFee, percent, resultAmount);
+        StringBuilder verification = verificationMessage(nowDate, amountSB, amountAppend, sumAmount, amountFee, percent, resultAmount);
 
-        panels.getResultTextAreaVerification().append(verification.toString());
+        panels.getMainResultTextAreaVerification().append(verification.toString());
         panels.getVerificationHistory().add(verification.toString());
+        panels.getMainHistoryButton().setText("히스토리 보기");
     }
 
 
-    private static StringBuilder resultMessage(String companyField, String headerMent, String nowDate, Long sumAmount, String amountFee, BigDecimal percent, BigDecimal resultAmount, String footerMent) {
-        return new StringBuilder()
-            .append(companyField)
-            .append("\n")
-            .append(headerMent)
-            .append("\n\n")
-            .append(nowDate)
-            .append("\n")
-            .append("ㄴ매출: ")
-            .append(sumAmount)
-            .append("\n\n")
-            .append("총 - ")
-            .append(CommonUtils.addCommaWonFormat(sumAmount))
-            .append("\n\n")
-            .append(CommonUtils.addCommaFormat(amountFee))
-            .append("% ")
-            .append("매출 수수료 정산 금액 - ")
-            .append(CommonUtils.addCommaWonFormat(percent))
-            .append("\n")
-            .append("세금계산서 발행금액 - ")
-            .append(CommonUtils.addCommaWonFormat(resultAmount))
-            .append("\n\n")
-            .append(footerMent)
-        ;
-    }
+    private StringBuilder resultMessage(String nowDate, StringBuilder amountSB, Long sumAmount, String amountFee, BigDecimal percent, BigDecimal resultAmount) {
+        String companyField = panels.getCompanyField().getText().equals("") ?
+                "" : panels.getCompanyField().getText() + "\n";
 
-    private static StringBuilder verificationMessage(String companyField, String nowDate, StringBuilder amountSB, String amountAppend, Long sumAmount, String amountFee, BigDecimal percent, BigDecimal resultAmount) {
         return new StringBuilder()
                 .append(companyField)
-                .append("[검증]")
+                .append(panels.getHeaderMessage())
                 .append("\n\n")
                 .append(nowDate)
                 .append("\n")
                 .append(amountSB)
+                .append("\n")
+                .append("총 - ")
+                .append(CommonUtils.addCommaWonFormat(sumAmount))
+                .append("\n\n")
+                .append(CommonUtils.addCommaFormat(amountFee))
+                .append("% ")
+                .append("매출 수수료 정산 금액 - ")
+                .append(CommonUtils.addCommaWonFormat(percent))
+                .append("\n")
+                .append("세금계산서 발행금액 - ")
+                .append(CommonUtils.addCommaWonFormat(resultAmount))
+                .append("\n\n")
+                .append(panels.getFooterMessage())
+        ;
+    }
+
+    private StringBuilder verificationMessage(String nowDate, StringBuilder amountSB, String amountAppend, Long sumAmount, String amountFee, BigDecimal percent, BigDecimal resultAmount) {
+        String companyField = panels.getCompanyField().getText().equals("") ?
+                "" : panels.getCompanyField().getText() + "\n";
+
+        return new StringBuilder()
+                .append(companyField)
+                .append(nowDate)
+                .append("\n")
+                .append(amountSB)
+                .append("\n")
                 .append("합계 - ")
                 .append(amountAppend)
                 .append(" = ")
@@ -171,15 +147,15 @@ public class ButtonClickListener implements ActionListener {
 
     private String amountAppend(StringBuilder amount) {
         String[] split = amount.toString().split("\\|");
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (String s : split) {
-            result += s + " + ";
+            result.append(s).append(" + ");
         }
 
         return result.substring(0, result.length() - 2);
     }
 
-    private void removeButtonClickEvent() {
+    private void mainResultRemoveButtonClickEvent(PercentCalculatorController frame, ActionEvent e) {
         List amountList = panels.getSalesAmountList();
         String selectedItem = amountList.getSelectedItem();
         if (selectedItem == null) return;
@@ -187,32 +163,82 @@ public class ButtonClickListener implements ActionListener {
         amountList.remove(selectedItem);
     }
 
-    private void allRemoveButtonClickEvent() {
+    private void mainAllResultRemoveButtonClickEvent(PercentCalculatorController frame, ActionEvent e) {
         List amountList = panels.getSalesAmountList();
         if (amountList.getItemCount() == 0) return;
 
         amountList.removeAll();
     }
 
-    private void historyButtonClickEvent() {
+    private void mainAllRemoveButtonClickEvent(PercentCalculatorController frame, ActionEvent e) {
+        textAreaRemove();
+        panels.getHistory().clear();
+        panels.getVerificationHistory().clear();
+        panels.getSalesAmountList().removeAll();
+
+        panels.getCompanyField().selectAll();
+        panels.getCompanyField().replaceSelection("");
+        panels.getMainSalesAmountField().selectAll();
+        panels.getMainSalesAmountField().replaceSelection("");
+        panels.getMainSalesAmountFeeField().selectAll();
+        panels.getMainSalesAmountFeeField().replaceSelection("");
+    }
+
+    private void mainHistoryButtonClickEvent(PercentCalculatorController frame, ActionEvent e) {
         textAreaRemove();
 
         java.util.List<String> history = panels.getHistory();
-
-        if (history.size() > 0) {
-            historyCall(panels.getResultTextArea(), history, "히스토리");
-        }
-
         java.util.List<String> verificationHistory = panels.getVerificationHistory();
 
-        if (verificationHistory.size() > 0) {
-            historyCall(panels.getResultTextAreaVerification(), verificationHistory, "검증 히스토리");
+        if (panels.getMainHistoryButton().getText().equals("히스토리 보기")) {
+            if (history.size() > 0) {
+                historyCall(panels.getMainResultTextArea(), history, "히스토리");
+            }
+
+            if (verificationHistory.size() > 0) {
+                historyCall(panels.getMainResultTextAreaVerification(), verificationHistory, "검증 히스토리");
+            }
+
+            if (history.size() > 0 && verificationHistory.size() > 0) {
+                panels.getMainHistoryButton().setText("결과 보기");
+            }
+        } else if (panels.getMainHistoryButton().getText().equals("결과 보기")) {
+            if (history.size() > 0 && verificationHistory.size() > 0) {
+                panels.getMainResultTextArea().setText(history.get(history.size()-1));
+                panels.getMainResultTextAreaVerification().setText(verificationHistory.get(verificationHistory.size()-1));
+                panels.getMainHistoryButton().setText("히스토리 보기");
+            }
         }
 
     }
 
-    private void messageUpdateButtonClickEvent() {
+    private void mainMessageUpdateButtonClickEvent(PercentCalculatorController frame, ActionEvent e) {
+        new MessageUpdateDialogController(panels).callMessageUpdateDialog();
+    }
 
+    private void messageUpdateDialogSubmitButtonClickEvent(MessageUpdateDialogController dialogUI, ActionEvent e) {
+        dialogUI.setVisible(false);
+        panels.setHeaderMessage(panels.getHeaderMessageTextArea().getText());
+        panels.setFooterMessage(panels.getFooterMessageTextArea().getText());
+        CommonUtils.saveMessage(panels);
+    }
+
+    private void messageUpdateDialogCancelButtonClickEvent(MessageUpdateDialogController dialogUI, ActionEvent e) {
+        dialogUI.setVisible(false);
+    }
+
+    private void mainSaveFileButtonClickEvent(PercentCalculatorController frame, ActionEvent e) {
+        if (panels.getMainSaveFileChooser().showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+            if (panels.getHistory().size() > 0) {
+                String filePath = panels.getMainSaveFileChooser().getSelectedFile().toString();
+                String fileExtension = panels.getMainSaveFileChooser().getFileFilter().getDescription();
+                String fileFullPath = filePath + "." + fileExtension;
+
+                CommonUtils.saveFile(panels, fileFullPath);
+            } else {
+                JOptionPane.showMessageDialog(null, "매출을 입력하세요.");
+            }
+        }
     }
 
     private void historyCall(JTextArea textArea, java.util.List<String> history, String name) {
@@ -226,10 +252,9 @@ public class ButtonClickListener implements ActionListener {
     }
 
     private void textAreaRemove() {
-        panels.getResultTextArea().selectAll();
-        panels.getResultTextArea().replaceSelection("");
-        panels.getResultTextAreaVerification().selectAll();
-        panels.getResultTextAreaVerification().replaceSelection("");
+        panels.getMainResultTextArea().selectAll();
+        panels.getMainResultTextArea().replaceSelection("");
+        panels.getMainResultTextAreaVerification().selectAll();
+        panels.getMainResultTextAreaVerification().replaceSelection("");
     }
-
 }
