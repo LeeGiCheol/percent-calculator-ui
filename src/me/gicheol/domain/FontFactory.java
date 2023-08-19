@@ -2,6 +2,10 @@ package me.gicheol.domain;
 
 import java.awt.*;
 
+
+/**
+ * 폰트 생성
+ */
 public class FontFactory {
 
     public static final Font BOLD_FONT_SIZE_20 = new Font("맑은 고딕", Font.BOLD, 20);

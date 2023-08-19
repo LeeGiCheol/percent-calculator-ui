@@ -12,16 +12,25 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+
+/**
+ * 버튼 클릭 이벤트
+ */
 public class ButtonClickListener {
 
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("M/d");
-
     private final Panels panels;
 
     public ButtonClickListener(Panels panels) {
         this.panels = panels;
     }
 
+
+    /**
+     * 매출 입력 버튼 클릭 이벤트
+     * @param frame
+     * @param e
+     */
     private void mainSalesAddButtonClickEvent(PercentCalculatorController frame, ActionEvent e) {
         String text = panels.getMainSalesAmountField().getText();
 
@@ -42,6 +51,12 @@ public class ButtonClickListener {
         panels.setMainSalesAmountField(salesAmountField);
     }
 
+
+    /**
+     * 결과 버튼 클릭 이벤트
+     * @param frame
+     * @param e
+     */
     private void mainSubmitButtonClickEvent(PercentCalculatorController frame, ActionEvent e) {
         textAreaRemove();
 
@@ -55,42 +70,82 @@ public class ButtonClickListener {
             JOptionPane.showMessageDialog(null, "퍼센트를 입력하세요.");
         }
 
-
-        String nowDate = LocalDate.now().format(dateFormat);
-
-        StringBuilder amount = new StringBuilder();
-
         List amountList = panels.getSalesAmountList();
         Long sumAmount = 0L;
-        StringBuilder amountSB = new StringBuilder();
+        StringBuilder amountListMessageAppendSales = new StringBuilder();
+        StringBuilder amountListMessage = new StringBuilder();
 
         for (String item : amountList.getItems()) {
             sumAmount += Long.parseLong(item.substring(0, item.length()-1).replaceAll(",", ""));
 
-            amountSB.append("ㄴ매출: ")
+            amountListMessageAppendSales.append("ㄴ매출: ")
                     .append(item).append("\n");
 
-            amount.append(item).append("|");
+            amountListMessage.append(item).append("|");
         }
 
-        BigDecimal percent = CommonUtils.getPercent(sumAmount, amountFee);
-        BigDecimal resultAmount = CommonUtils.getResultAmount(percent);
+        String nowDate = LocalDate.now().format(dateFormat);
+        BigDecimal feeAmount = CommonUtils.calculateFeeAmount(sumAmount, amountFee);
+        BigDecimal vat = CommonUtils.calculateVAT(feeAmount);
 
-        StringBuilder result = resultMessage(nowDate, amountSB, sumAmount, amountFee, percent, resultAmount);
+        StringBuilder resultMessage = resultMessage(nowDate, amountListMessageAppendSales, sumAmount, amountFee, feeAmount, vat);
 
-        panels.getMainResultTextArea().append(result.toString());
-        panels.getHistory().add(result.toString());
+        panels.getMainResultTextArea().append(resultMessage.toString());
+        panels.getHistory().add(resultMessage.toString());
 
-        String amountAppend = amountAppend(amount);
+        String verificationAmountMessage = verificationAmountMessage(amountListMessage);
 
-        StringBuilder verification = verificationMessage(nowDate, amountSB, amountAppend, sumAmount, amountFee, percent, resultAmount);
+        StringBuilder verification = verificationMessage(nowDate, amountListMessageAppendSales, verificationAmountMessage, sumAmount, amountFee, feeAmount, vat);
 
         panels.getMainResultTextAreaVerification().append(verification.toString());
         panels.getVerificationHistory().add(verification.toString());
-        panels.getMainHistoryButton().setText("히스토리 보기");
+
+        if (!panels.getMainHistoryButton().getText().equals("히스토리 보기")) {
+            historyButtonToggle();
+        }
     }
 
 
+    /**
+     * 히스토리 보기 버튼 toggle
+     * toggle 시 결과보기
+     */
+    private void historyButtonToggle() {
+        java.util.List<String> history = panels.getHistory();
+        java.util.List<String> verificationHistory = panels.getVerificationHistory();
+
+        if (panels.getMainHistoryButton().getText().equals("히스토리 보기")) {
+            if (history.size() > 0) {
+                historyMessageCall(panels.getMainResultTextArea(), history, "히스토리");
+            }
+
+            if (verificationHistory.size() > 0) {
+                historyMessageCall(panels.getMainResultTextAreaVerification(), verificationHistory, "검증 히스토리");
+            }
+
+            if (history.size() > 0 && verificationHistory.size() > 0) {
+                panels.getMainHistoryButton().setText("결과 보기");
+            }
+        } else if (panels.getMainHistoryButton().getText().equals("결과 보기")) {
+            if (history.size() > 0 && verificationHistory.size() > 0) {
+                panels.getMainResultTextArea().setText(history.get(history.size()-1));
+                panels.getMainResultTextAreaVerification().setText(verificationHistory.get(verificationHistory.size()-1));
+                panels.getMainHistoryButton().setText("히스토리 보기");
+            }
+        }
+    }
+
+
+    /**
+     * 결과 메시지 생성
+     * @param nowDate
+     * @param amountSB
+     * @param sumAmount
+     * @param amountFee
+     * @param percent
+     * @param resultAmount
+     * @return
+     */
     private StringBuilder resultMessage(String nowDate, StringBuilder amountSB, Long sumAmount, String amountFee, BigDecimal percent, BigDecimal resultAmount) {
         String companyField = panels.getCompanyField().getText().equals("") ?
                 "" : panels.getCompanyField().getText() + "\n";
@@ -118,6 +173,18 @@ public class ButtonClickListener {
         ;
     }
 
+
+    /**
+     * 검증 결과 메시지 생성
+     * @param nowDate
+     * @param amountSB
+     * @param amountAppend
+     * @param sumAmount
+     * @param amountFee
+     * @param percent
+     * @param resultAmount
+     * @return
+     */
     private StringBuilder verificationMessage(String nowDate, StringBuilder amountSB, String amountAppend, Long sumAmount, String amountFee, BigDecimal percent, BigDecimal resultAmount) {
         String companyField = panels.getCompanyField().getText().equals("") ?
                 "" : panels.getCompanyField().getText() + "\n";
@@ -145,7 +212,30 @@ public class ButtonClickListener {
         ;
     }
 
-    private String amountAppend(StringBuilder amount) {
+
+    /**
+     * 히스토리 메시지 생성
+     * @param textArea
+     * @param history
+     * @param name
+     */
+    private void historyMessageCall(JTextArea textArea, java.util.List<String> history, String name) {
+        StringBuilder result = new StringBuilder();
+        result.append(name).append("\n");
+        for (int i = 0; i < history.size(); i++) {
+            result.append(String.format("[%d] ", i+1)).append("\n").append(history.get(i)).append("\n\n");
+        }
+
+        textArea.append(result.toString());
+    }
+
+
+    /**
+     * 검증용 합계 메시지 생성
+     * @param amount
+     * @return
+     */
+    private String verificationAmountMessage(StringBuilder amount) {
         String[] split = amount.toString().split("\\|");
         StringBuilder result = new StringBuilder();
         for (String s : split) {
@@ -155,7 +245,13 @@ public class ButtonClickListener {
         return result.substring(0, result.length() - 2);
     }
 
-    private void mainResultRemoveButtonClickEvent(PercentCalculatorController frame, ActionEvent e) {
+
+    /**
+     * 선택 매출 목록 삭제 버튼 클릭 이벤트 (매출 목록 리스트 중 선택 된 1개 매출 삭제)
+     * @param frame
+     * @param e
+     */
+    private void mainSelectResultRemoveButtonClickEvent(PercentCalculatorController frame, ActionEvent e) {
         List amountList = panels.getSalesAmountList();
         String selectedItem = amountList.getSelectedItem();
         if (selectedItem == null) return;
@@ -163,6 +259,12 @@ public class ButtonClickListener {
         amountList.remove(selectedItem);
     }
 
+
+    /**
+     * 매출 목록 전체 삭제 버튼 클릭 이벤트 (매출 목록 전체 삭제)
+     * @param frame
+     * @param e
+     */
     private void mainAllResultRemoveButtonClickEvent(PercentCalculatorController frame, ActionEvent e) {
         List amountList = panels.getSalesAmountList();
         if (amountList.getItemCount() == 0) return;
@@ -170,6 +272,12 @@ public class ButtonClickListener {
         amountList.removeAll();
     }
 
+
+    /**
+     * 기록 전체 삭제 버튼 클릭 이벤트 (Field 값, 매출 목록, 결과, 검증 결과, 히스토리 모두 삭제)
+     * @param frame
+     * @param e
+     */
     private void mainAllRemoveButtonClickEvent(PercentCalculatorController frame, ActionEvent e) {
         textAreaRemove();
         panels.getHistory().clear();
@@ -184,49 +292,33 @@ public class ButtonClickListener {
         panels.getMainSalesAmountFeeField().replaceSelection("");
     }
 
+
+    /**
+     * 히스토리 보기 버튼 클릭 이벤트
+     * @param frame
+     * @param e
+     */
     private void mainHistoryButtonClickEvent(PercentCalculatorController frame, ActionEvent e) {
         textAreaRemove();
-
-        java.util.List<String> history = panels.getHistory();
-        java.util.List<String> verificationHistory = panels.getVerificationHistory();
-
-        if (panels.getMainHistoryButton().getText().equals("히스토리 보기")) {
-            if (history.size() > 0) {
-                historyCall(panels.getMainResultTextArea(), history, "히스토리");
-            }
-
-            if (verificationHistory.size() > 0) {
-                historyCall(panels.getMainResultTextAreaVerification(), verificationHistory, "검증 히스토리");
-            }
-
-            if (history.size() > 0 && verificationHistory.size() > 0) {
-                panels.getMainHistoryButton().setText("결과 보기");
-            }
-        } else if (panels.getMainHistoryButton().getText().equals("결과 보기")) {
-            if (history.size() > 0 && verificationHistory.size() > 0) {
-                panels.getMainResultTextArea().setText(history.get(history.size()-1));
-                panels.getMainResultTextAreaVerification().setText(verificationHistory.get(verificationHistory.size()-1));
-                panels.getMainHistoryButton().setText("히스토리 보기");
-            }
-        }
-
+        historyButtonToggle();
     }
 
+
+    /**
+     * 메시지 수정하기 버튼 클릭 이벤트
+     * @param frame
+     * @param e
+     */
     private void mainMessageUpdateButtonClickEvent(PercentCalculatorController frame, ActionEvent e) {
         new MessageUpdateDialogController(panels).callMessageUpdateDialog();
     }
 
-    private void messageUpdateDialogSubmitButtonClickEvent(MessageUpdateDialogController dialogUI, ActionEvent e) {
-        dialogUI.setVisible(false);
-        panels.setHeaderMessage(panels.getHeaderMessageTextArea().getText());
-        panels.setFooterMessage(panels.getFooterMessageTextArea().getText());
-        CommonUtils.saveMessage(panels);
-    }
 
-    private void messageUpdateDialogCancelButtonClickEvent(MessageUpdateDialogController dialogUI, ActionEvent e) {
-        dialogUI.setVisible(false);
-    }
-
+    /**
+     * 파일로 저장하기 버튼 클릭 이벤트
+     * @param frame
+     * @param e
+     */
     private void mainSaveFileButtonClickEvent(PercentCalculatorController frame, ActionEvent e) {
         if (panels.getMainSaveFileChooser().showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
             if (panels.getHistory().size() > 0) {
@@ -241,16 +333,33 @@ public class ButtonClickListener {
         }
     }
 
-    private void historyCall(JTextArea textArea, java.util.List<String> history, String name) {
-        StringBuilder result = new StringBuilder();
-        result.append(name).append("\n");
-        for (int i = 0; i < history.size(); i++) {
-            result.append(String.format("[%d] ", i+1)).append("\n").append(history.get(i)).append("\n\n");
-        }
 
-        textArea.append(result.toString());
+    /**
+     * 변경하기 버튼 클릭 이벤트 (MessageUpdateDialog)
+     * @param dialogUI
+     * @param e
+     */
+    private void messageUpdateDialogSubmitButtonClickEvent(MessageUpdateDialogController dialogUI, ActionEvent e) {
+        dialogUI.setVisible(false);
+        panels.setHeaderMessage(panels.getHeaderMessageTextArea().getText());
+        panels.setFooterMessage(panels.getFooterMessageTextArea().getText());
+        CommonUtils.saveMessage(panels);
     }
 
+
+    /**
+     * 나가기 버튼 클릭 이벤트 (MessageUpdateDialog)
+     * @param dialogUI
+     * @param e
+     */
+    private void messageUpdateDialogCancelButtonClickEvent(MessageUpdateDialogController dialogUI, ActionEvent e) {
+        dialogUI.setVisible(false);
+    }
+
+
+    /**
+     * 결과, 검증 결과 내용 삭제
+     */
     private void textAreaRemove() {
         panels.getMainResultTextArea().selectAll();
         panels.getMainResultTextArea().replaceSelection("");

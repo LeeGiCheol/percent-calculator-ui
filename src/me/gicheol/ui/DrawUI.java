@@ -11,17 +11,25 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 
-
+/**
+ * UI 생성
+ */
 public class DrawUI {
 
     private final Panels panels;
     private final java.util.List<String> layoutLocation;
+    private final String faviconPath = "/resources/favicon.ico";
 
     public DrawUI(Panels panels) {
         this.panels = panels;
         this.layoutLocation = setLayoutLocation();
     }
 
+
+    /**
+     * 메인 페이지 생성
+     * @param jFrame
+     */
     public void initMainPage(JFrame jFrame) {
         setLookAndFeel("Nimbus");
 
@@ -29,13 +37,19 @@ public class DrawUI {
         initTopPanel();
         initMiddlePanel();
 
-        setFaviconImage(jFrame, "/resources/favicon.ico");
+        setFaviconImage(jFrame);
 
         jFrame.setSize(2000,1200);
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jFrame.setVisible(true);
     }
-    public void setLookAndFeel(String uiType) {
+
+
+    /**
+     * UI 타입 설정
+     * @param uiType
+     */
+    private void setLookAndFeel(String uiType) {
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if (info.getName().equals(uiType)) {
@@ -48,12 +62,41 @@ public class DrawUI {
         }
     }
 
-    public void setFaviconImage(JFrame jframe, String filePath) {
-        Path path = Paths.get(Paths.get("").toAbsolutePath() + filePath);
+
+    /**
+     * Frame 파비콘 설정
+     * TODO: 현재 설정 안되는데 원인 파악 필요
+     * @param jframe
+     */
+    private void setFaviconImage(JFrame jframe) {
+        Path path = Paths.get(Paths.get("").toAbsolutePath() + faviconPath);
         ImageIcon favicon = new ImageIcon(path.toString());
         jframe.setIconImage(favicon.getImage());
     }
 
+
+    /**
+     * 판넬 기본 설정
+     * @return
+     */
+    public Panels setDefaultPanels() {
+        panels.setMainSalesAmountField(new JTextField());
+        panels.setMainSalesAmountFeeField(new JTextField());
+        panels.setCompanyField(new JTextField());
+
+        JFileChooser saveFileChooser = new JFileChooser();
+        saveFileChooser.setFileFilter(new FileNameExtensionFilter("txt", "txt"));
+        saveFileChooser.setMultiSelectionEnabled(false);
+        panels.setMainSaveFileChooser(saveFileChooser);
+
+        return panels;
+    }
+
+
+    /**
+     * 판넬 기본 레이아웃 등록
+     * @return
+     */
     public java.util.List<String> setLayoutLocation() {
         java.util.List<String> location = new ArrayList<>();
         location.add(BorderLayout.NORTH);
@@ -62,27 +105,41 @@ public class DrawUI {
         return location;
     }
 
+
+    /**
+     * 판넬 레이아웃 설정
+     * @param jFrame
+     * @param panels
+     */
     public void addPanelToLayout(JFrame jFrame, JPanel... panels) {
         for (int i = 0; i < panels.length; i++) {
             jFrame.add(layoutLocation.get(i), panels[i]);
         }
     }
 
+
+    /**
+     * 상단 판넬 설정
+     * topText: 매출, 매출 수수료, 업체명
+     * topButton: 매출 입력, 결과
+     * buttonRow(topButton에 포함): 선택 매출 목록 삭제, 매출 목록 전체 삭제, 기록 전체 삭제, 히스토리 보기, 메시지 수정하기
+     * saveFileButton(판넬 없음): 파일로 저장하기
+     * topPanelCombination: 위 판넬, 버튼 합치기
+     * resultLabel: 매출 목록, 결과, 검증
+     */
     public void initTopPanel() {
         initTopText();
         initTopButton();
         initButtonRow();
         initSaveFileButton();
-
         initTopPanelCombination();
-
         initResultLabel();
     }
 
-    public void initMiddlePanel() {
-        this.panels.getMainMiddlePanel().add(initTextAreaPanel());
-    }
 
+    /**
+     * 상단 텍스트 필드 판넬 설정
+     */
     private void initTopText() {
         JLabel amountLabel = new JLabel(" 매출 :", JLabel.LEFT);
         JTextField salesAmountField = this.panels.getMainSalesAmountField();
@@ -110,6 +167,10 @@ public class DrawUI {
         topTextPanel.add(companyField);
     }
 
+
+    /**
+     * 상단 버튼 판넬 설정 (최 상단)
+     */
     private void initTopButton() {
         JButton salesAddButton = new JButton("매출 입력");
         JButton submitButton = new JButton("결과");
@@ -125,33 +186,41 @@ public class DrawUI {
         this.panels.setMainSubmitButton(submitButton);
     }
 
+
+    /**
+     * 상단 버튼 Row 설정 (상단 두 번째)
+     */
     private void initButtonRow() {
-        JButton resultRemoveButton = new JButton("선택 매출 목록 삭제");
+        JButton selectResultRemoveButton = new JButton("선택 매출 목록 삭제");
         JButton allResultRemoveButton = new JButton("매출 목록 전체 삭제");
         JButton allRemoveButton = new JButton("기록 전체 삭제");
         JButton historyButton = new JButton("히스토리 보기");
         JButton messageUpdateButton = new JButton("메시지 수정하기");
 
-        resultRemoveButton.setFont(FontFactory.PLAIN_FONT_SIZE_20);
+        selectResultRemoveButton.setFont(FontFactory.PLAIN_FONT_SIZE_20);
         allRemoveButton.setFont(FontFactory.PLAIN_FONT_SIZE_20);
         allResultRemoveButton.setFont(FontFactory.PLAIN_FONT_SIZE_20);
         historyButton.setFont(FontFactory.PLAIN_FONT_SIZE_20);
         messageUpdateButton.setFont(FontFactory.PLAIN_FONT_SIZE_20);
 
         JPanel topButtonPanel = this.panels.getMainTopButtonPanel();
-        topButtonPanel.add(resultRemoveButton);
+        topButtonPanel.add(selectResultRemoveButton);
         topButtonPanel.add(allResultRemoveButton);
         topButtonPanel.add(allRemoveButton);
         topButtonPanel.add(historyButton);
         topButtonPanel.add(messageUpdateButton);
 
-        this.panels.setMainResultRemoveButton(resultRemoveButton);
+        this.panels.setMainSelectResultRemoveButton(selectResultRemoveButton);
         this.panels.setMainAllResultRemoveButton(allResultRemoveButton);
         this.panels.setMainAllRemoveButton(allRemoveButton);
         this.panels.setMainHistoryButton(historyButton);
         this.panels.setMainMessageUpdateButton(messageUpdateButton);
     }
 
+
+    /**
+     * 파일로 저장하기 버튼 설정 (세 번째)
+     */
     private void initSaveFileButton() {
         JButton saveFileButton = new JButton("파일로 저장하기");
         saveFileButton.setFont(FontFactory.PLAIN_FONT_SIZE_20);
@@ -160,6 +229,22 @@ public class DrawUI {
     }
 
 
+    /**
+     * topPanel 합치기
+     */
+    private void initTopPanelCombination() {
+        JPanel topPanel = this.panels.getMainTopPanel();
+
+        topPanel.add(this.panels.getMainTopTextPanel());
+        topPanel.add(this.panels.getMainTopButtonPanel());
+        topPanel.add(this.panels.getMainSaveFileButton());
+        topPanel.add(new JPanel(new GridLayout(1, 1)));
+    }
+
+
+    /**
+     * 매출 목록, 결과, 검증 라벨 설정
+     */
     private void initResultLabel() {
         JPanel resultLabelPanel = new JPanel(new GridLayout(1, 1));
 
@@ -178,16 +263,21 @@ public class DrawUI {
         this.panels.getMainTopPanel().add(resultLabelPanel);
     }
 
-    private void initTopPanelCombination() {
-        JPanel topPanel = this.panels.getMainTopPanel();
 
-        topPanel.add(this.panels.getMainTopTextPanel());
-        topPanel.add(this.panels.getMainTopButtonPanel());
-        topPanel.add(this.panels.getMainSaveFileButton());
-        topPanel.add(new JPanel(new GridLayout(1, 1)));
+    /**
+     * 중간 판넬 설정
+     * textAreaPanel: 매출 목록(List), 결과, 검증
+     */
+    public void initMiddlePanel() {
+        this.panels.getMainMiddlePanel().add(initTextAreaPanel());
     }
 
 
+    /**
+     * textArea 설정
+     * 매출 목록은 List
+     * @return
+     */
     private JPanel initTextAreaPanel() {
         JPanel textAreaPanel = new JPanel(new GridLayout(1, 1));
 
@@ -212,6 +302,11 @@ public class DrawUI {
         return textAreaPanel;
     }
 
+
+    /**
+     * TextArea Scroll 추가
+     * @return
+     */
     private static JTextArea getTextAreaScrollPane() {
         JTextArea textArea = new JTextArea();
         textArea.setFont(FontFactory.PLAIN_FONT_SIZE_20);
@@ -220,20 +315,12 @@ public class DrawUI {
         return textArea;
     }
 
-    public Panels setDefaultPanels() {
-        panels.setMainSalesAmountField(new JTextField());
-        panels.setMainSalesAmountFeeField(new JTextField());
-        panels.setCompanyField(new JTextField());
 
-        JFileChooser saveFileChooser = new JFileChooser();
-        saveFileChooser.setFileFilter(new FileNameExtensionFilter("txt", "txt"));
-        saveFileChooser.setMultiSelectionEnabled(false);
-        panels.setMainSaveFileChooser(saveFileChooser);
-
-        return panels;
-    }
-
-
+    /**
+     * 메시지 수정하기 팝업 생성
+     * MessageUpdateDialog
+     * @param jDialog
+     */
     public void initMessageUpdateDialog(JDialog jDialog) {
         jDialog.add(BorderLayout.BEFORE_FIRST_LINE, messageUpdateDialogTopLabel());
         jDialog.add(BorderLayout.CENTER, messageUpdateDialogMessagePanel());
@@ -242,6 +329,11 @@ public class DrawUI {
         jDialog.setVisible(true);
     }
 
+
+    /**
+     * 메시지 수정하기 팝업 상단 판넬: 상단 메시지(Label), 하단 메시지(Label)
+     * @return
+     */
     private JPanel messageUpdateDialogTopLabel() {
         JPanel labelPanel = new JPanel(new GridLayout(1, 2));
         JLabel headerLabel = new JLabel("상단 메시지");
@@ -256,6 +348,11 @@ public class DrawUI {
         return labelPanel;
     }
 
+
+    /**
+     * 메시지 수정하기 팝업 메시지 판넬: 상단 메시지(TextArea), 하단 메시지(TextArea)
+     * @return
+     */
     private JPanel messageUpdateDialogMessagePanel() {
         JPanel messagePanel = new JPanel(new GridLayout(1, 2));
         JTextArea header = new JTextArea();
@@ -281,6 +378,11 @@ public class DrawUI {
         return messagePanel;
     }
 
+
+    /**
+     * 메시지 수정하기 팝업 하단 판넬: 변경하기, 나가기
+     * @return
+     */
     private JPanel messageUpdateFooterPanel() {
         JPanel footerPanel = new JPanel(new GridLayout(1, 2));
         JButton submitButton = new JButton("변경하기");
