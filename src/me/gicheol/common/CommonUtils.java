@@ -1,6 +1,7 @@
 package me.gicheol.common;
 
 import me.gicheol.domain.Panels;
+import me.gicheol.listener.MouseClickListener;
 import me.gicheol.listener.listenerfactory.ButtonClickEventListenerFactory;
 import me.gicheol.listener.listenerfactory.KeyInputListenerFactory;
 
@@ -14,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Calendar;
 
 
 /**
@@ -381,4 +383,51 @@ public class CommonUtils {
             }
         }
     }
+
+
+    /**
+     * 날짜 출력
+     * @param panels
+     */
+    public static void createDayStart(Panels panels) {
+        panels.getCntCenter().setVisible(false);	//패널 숨기기
+        panels.getCntCenter().removeAll();	//날짜 출력한 라벨 지우기
+        dayPrint(panels, (Integer) panels.getYearCombo().getSelectedItem(), (Integer) panels.getMonthCombo().getSelectedItem());
+        panels.getCntCenter().setVisible(true);	//패널 재출력
+    }
+
+
+    /**
+     * 날짜 출력
+     * @param panels
+     * @param y
+     * @param m
+     */
+    public static void dayPrint(Panels panels, int y, int m) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(y, m-1, 1);
+        int week = cal.get(Calendar.DAY_OF_WEEK); // 1일에 대한 요일
+        int lastDate = cal.getActualMaximum(Calendar.DAY_OF_MONTH); // 1월에 대한 마지막 요일
+        for (int i = 1; i < week; i++) { // 1월 1일 전까지 공백을 표시해라
+            panels.getCntCenter().add(new JLabel(""));
+        }
+
+        for (int i = 0; i <= lastDate-1; i++) { // 1월 마지막 날까지 숫자를 적어라, 그리고 토요일 일요일은 색깔을 입혀라
+            JLabel day = new JLabel();
+            day.setHorizontalAlignment(JLabel.CENTER);
+            if((week+i) % 7 == 0) {
+                panels.getCntCenter().add(day).setForeground(Color.blue);
+                day.setText(String.valueOf(1 + i));
+            } else if((week+i) % 7 == 1) {
+                panels.getCntCenter().add(day).setForeground(Color.red);
+                day.setText(String.valueOf(1 + i));
+            } else {
+                panels.getCntCenter().add(day);
+                day.setText(String.valueOf(1 + i));
+            }
+            day.addMouseListener(new MouseClickListener(panels));
+        }
+
+    }
+
 }

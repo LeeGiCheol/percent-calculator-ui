@@ -1,9 +1,11 @@
 package me.gicheol.listener;
 
 import me.gicheol.common.CommonUtils;
+import me.gicheol.controller.CalendarController;
 import me.gicheol.domain.Panels;
 import me.gicheol.controller.MessageUpdateDialogController;
 import me.gicheol.controller.PercentCalculatorController;
+import me.gicheol.ui.CalendarUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 
 
 /**
@@ -377,4 +380,79 @@ public class ButtonClickListener {
         panels.getMainResultTextAreaVerification().selectAll();
         panels.getMainResultTextAreaVerification().replaceSelection("");
     }
+
+
+    /**
+     * Calendar 이전 달 버튼 클릭 이벤트
+     * @param e
+     */
+    private void lastMonthClickEvent(ActionEvent e) {
+        Integer year = (Integer) panels.getYearCombo().getSelectedItem();
+        Integer month = (Integer) panels.getMonthCombo().getSelectedItem();
+
+        if (month == 1) {
+            year--; month = 12;
+        } else {
+            month--;
+        }
+
+        panels.getYearCombo().setSelectedItem(year);
+        panels.getMonthCombo().setSelectedItem(month);
+    }
+
+
+    /**
+     * Calendar 다음 달 버튼 클릭 이벤트
+     * @param e
+     */
+    private void nextMonthClickEvent(ActionEvent e) {
+        Integer year = (Integer) panels.getYearCombo().getSelectedItem();
+        Integer month = (Integer) panels.getMonthCombo().getSelectedItem();
+
+        if (year == 12){
+            year++; month = 1;
+        } else {
+            month++;
+        }
+
+        panels.getYearCombo().setSelectedItem(year);
+        panels.getMonthCombo().setSelectedItem(month);
+    }
+
+
+    /**
+     * Calendar 날짜 선택 버튼 클릭 이벤트
+     * @param e
+     */
+    private void calendarSubmitClickEvent(CalendarController frame, ActionEvent e) {
+        String selectMonth = panels.getMonthCombo().getSelectedItem().toString();
+        String selectDay= panels.getSelectedDay().getText();
+
+        if (selectMonth.length() == 1) {
+            selectMonth = "0" + selectMonth;
+        }
+        if (selectDay.length() == 1) {
+            selectDay = "0" + selectDay;
+        }
+
+        if (selectMonth.length() == 0 || selectDay.length() == 0) {
+            return;
+        }
+
+        panels.getMainDatePickerField().setText(selectMonth + "/" + selectDay);
+        panels.setShowDatePicker(false);
+
+        frame.setVisible(false);
+    }
+
+
+    /**
+     * Calendar 이전 달, 다음 달 버튼 클릭 후 이벤트
+     * @param e
+     */
+    private void comboActionEvent(ActionEvent e) {
+        CommonUtils.createDayStart(panels);
+    }
+
+
 }
