@@ -10,8 +10,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.Locale;
 
 
 /**
@@ -20,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 public class ButtonClickListener {
 
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("M/d");
+    private static final DateTimeFormatter dateParseFormat = DateTimeFormatter.ofPattern("yyyy/M/d");
     private final Panels panels;
 
     public ButtonClickListener(Panels panels) {
@@ -33,6 +37,17 @@ public class ButtonClickListener {
      * @param e
      */
     private void mainSalesAddButtonClickEvent(PercentCalculatorController frame, ActionEvent e) {
+        String date = "";
+        if (panels.getMainDatePickerField().getText().equals("")) {
+            date = LocalDate.now().format(dateFormat);
+        } else {
+            date = panels.getMainDatePickerField().getText();
+        }
+
+        panels.getMainDatePickerFieldList().add(date);
+        panels.getMainDatePickerField().setText("");
+
+
         String text = panels.getMainSalesAmountField().getText();
 
         if (text.length() == 0) {
@@ -44,12 +59,11 @@ public class ButtonClickListener {
             text = text.replaceAll("[^0-9|,]", "");
         }
 
-        panels.getSalesAmountList().add(text + "원");
 
-        JTextField salesAmountField = panels.getMainSalesAmountField();
-        salesAmountField.setText("");
-
-        panels.setMainSalesAmountField(salesAmountField);
+        DayOfWeek dayOfWeek = LocalDate.parse(LocalDate.now().getYear() + "/" + date, dateParseFormat).getDayOfWeek();
+        String dayText = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.KOREAN);
+        panels.getSalesAmountList().add(text + "원" + " " + date + "(" + dayText + ")");
+        panels.getMainSalesAmountField().setText("");
     }
 
 
@@ -75,14 +89,21 @@ public class ButtonClickListener {
         Long sumAmount = 0L;
         StringBuilder amountListMessageAppendSales = new StringBuilder();
         StringBuilder amountListMessage = new StringBuilder();
+        List datePickerFieldList = panels.getMainDatePickerFieldList();
+        int idx = 0;
 
         for (String item : amountList.getItems()) {
-            sumAmount += Long.parseLong(item.substring(0, item.length()-1).replaceAll(",", ""));
+            String amount = item.split(" ")[0];
+            sumAmount += Long.parseLong(item.substring(0, amount.length()-1).replaceAll(",", ""));
 
-            amountListMessageAppendSales.append("ㄴ매출: ")
-                    .append(item).append("\n");
+            amountListMessageAppendSales
+                    .append(datePickerFieldList.getItem(idx))
+                    .append("\n")
+                    .append("ㄴ매출: ")
+                    .append(amount).append("\n\n");
 
-            amountListMessage.append(item).append("|");
+            amountListMessage.append(amount).append("|");
+            idx++;
         }
 
         BigDecimal feeAmount = CommonUtils.calculateFeeAmount(sumAmount, amountFee);
@@ -154,10 +175,7 @@ public class ButtonClickListener {
                 .append(companyField)
                 .append(panels.getHeaderMessage())
                 .append("\n\n")
-                .append(inputDateIsNullNowDate())
-                .append("\n")
                 .append(amountSB)
-                .append("\n")
                 .append("총 - ")
                 .append(CommonUtils.addCommaWonFormat(sumAmount))
                 .append("\n\n")
@@ -190,10 +208,7 @@ public class ButtonClickListener {
 
         return new StringBuilder()
                 .append(companyField)
-                .append(inputDateIsNullNowDate())
-                .append("\n")
                 .append(amountSB)
-                .append("\n")
                 .append("합계 - ")
                 .append(amountAppend)
                 .append(" = ")
@@ -209,19 +224,6 @@ public class ButtonClickListener {
                 .append("세금계산서 발행금액 - ")
                 .append(CommonUtils.addCommaFormat(feeAmount) + " x " + 1.1 + " = " + CommonUtils.addCommaWonFormat(vat))
         ;
-    }
-
-
-    /**
-     * 날짜를 작성했다면 작성한 날짜, 아니면 오늘 날짜를 반환
-     * @return
-     */
-    private String inputDateIsNullNowDate() {
-        if (panels.getMainDatePickerField().getText().equals("")) {
-            return LocalDate.now().format(dateFormat);
-        } else {
-            return panels.getMainDatePickerField().getText();
-        }
     }
 
 
@@ -266,8 +268,10 @@ public class ButtonClickListener {
     private void mainSelectResultRemoveButtonClickEvent(PercentCalculatorController frame, ActionEvent e) {
         List amountList = panels.getSalesAmountList();
         String selectedItem = amountList.getSelectedItem();
+
         if (selectedItem == null) return;
 
+        panels.getMainDatePickerFieldList().remove(amountList.getSelectedIndex());
         amountList.remove(selectedItem);
     }
 
@@ -282,6 +286,7 @@ public class ButtonClickListener {
         if (amountList.getItemCount() == 0) return;
 
         amountList.removeAll();
+        panels.getMainDatePickerFieldList().removeAll();
     }
 
 
@@ -295,6 +300,7 @@ public class ButtonClickListener {
         panels.getHistory().clear();
         panels.getVerificationHistory().clear();
         panels.getSalesAmountList().removeAll();
+        panels.getMainDatePickerFieldList().removeAll();
 
         panels.getCompanyField().selectAll();
         panels.getCompanyField().replaceSelection("");

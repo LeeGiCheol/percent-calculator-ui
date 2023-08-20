@@ -78,6 +78,7 @@ public class Panels {
 
     // DatePicker 날짜 input
     private JTextField mainDatePickerField;
+    private List mainDatePickerFieldList = new List();
 
     // DatePicker 실행 이미지
     private JLabel startCalendar;
@@ -295,6 +296,14 @@ public class Panels {
 
     public void setMainDatePickerField(JTextField mainDatePickerField) {
         this.mainDatePickerField = mainDatePickerField;
+    }
+
+    public List getMainDatePickerFieldList() {
+        return mainDatePickerFieldList;
+    }
+
+    public void setMainDatePickerFieldList(List mainDatePickerFieldList) {
+        this.mainDatePickerFieldList = mainDatePickerFieldList;
     }
 
     public JLabel getStartCalendar() {
