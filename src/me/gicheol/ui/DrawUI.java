@@ -2,10 +2,15 @@ package me.gicheol.ui;
 
 import me.gicheol.domain.FontFactory;
 import me.gicheol.domain.Panels;
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilDateModel;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -145,7 +150,7 @@ public class DrawUI {
         JTextField salesAmountField = this.panels.getMainSalesAmountField();
         JLabel salesAmountFee = new JLabel(" 매출 수수료 :", JLabel.LEFT);
         JTextField salesAmountFeeField = this.panels.getMainSalesAmountFeeField();
-        JLabel salesAmountFeePercentLabel = new JLabel("%", JLabel.LEFT);
+//        JLabel salesAmountFeePercentLabel = new JLabel("%", JLabel.LEFT);
         JLabel companyLabel = new JLabel(" 업체명 :", JLabel.LEFT);
         JTextField companyField = this.panels.getCompanyField();
 
@@ -153,7 +158,7 @@ public class DrawUI {
         salesAmountField.setFont(FontFactory.PLAIN_FONT_SIZE_20);
         salesAmountFee.setFont(FontFactory.BOLD_FONT_SIZE_20);
         salesAmountFeeField.setFont(FontFactory.PLAIN_FONT_SIZE_20);
-        salesAmountFeePercentLabel.setFont(FontFactory.PLAIN_FONT_SIZE_20);
+//        salesAmountFeePercentLabel.setFont(FontFactory.PLAIN_FONT_SIZE_20);
         companyLabel.setFont(FontFactory.BOLD_FONT_SIZE_20);
         companyField.setFont(FontFactory.PLAIN_FONT_SIZE_20);
 
@@ -162,9 +167,38 @@ public class DrawUI {
         topTextPanel.add(salesAmountField);
         topTextPanel.add(salesAmountFee);
         topTextPanel.add(salesAmountFeeField);
-        topTextPanel.add(salesAmountFeePercentLabel);
+//        topTextPanel.add(salesAmountFeePercentLabel);
         topTextPanel.add(companyLabel);
         topTextPanel.add(companyField);
+
+
+        ///
+        JLabel comp = new JLabel(" 날짜 입력 :");
+        comp.setFont(FontFactory.BOLD_FONT_SIZE_20);
+        topTextPanel.add(comp);
+
+        JLabel startCalendar = new JLabel();
+        ImageIcon icon = new ImageIcon(getClass().getResource("/calendar.png"));
+        Image img = icon.getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT);
+        ImageIcon icon2 = new ImageIcon(img);
+
+
+        startCalendar.setIcon(icon2);
+        startCalendar.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                CalendarUI calendarUI = new CalendarUI(panels);
+                calendarUI.callCalendar();
+            }
+        });
+        JTextField datePickerText = new JTextField();
+        panels.setDatePickerText(datePickerText);
+        topTextPanel.add(panels.getDatePickerText());
+
+        topTextPanel.add(startCalendar);
+
+        ///
+
     }
 
 
@@ -179,6 +213,7 @@ public class DrawUI {
         submitButton.setFont(FontFactory.BOLD_FONT_SIZE_20);
 
         JPanel topTextPanel = this.panels.getMainTopTextPanel();
+
         topTextPanel.add(salesAddButton);
         topTextPanel.add(submitButton);
 

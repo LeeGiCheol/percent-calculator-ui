@@ -73,6 +73,8 @@ public class Panels {
     // 검증 리스트
     private java.util.List<String> verificationHistory = new ArrayList<>();
 
+    private JTextField datePickerText;
+
 
     /////  MessageUpdateDialogController /////
     // 변경하기 버튼
@@ -311,4 +313,11 @@ public class Panels {
         this.footerMessage = footerMessage;
     }
 
+    public JTextField getDatePickerText() {
+        return datePickerText;
+    }
+
+    public void setDatePickerText(JTextField datePickerText) {
+        this.datePickerText = datePickerText;
+    }
 }
