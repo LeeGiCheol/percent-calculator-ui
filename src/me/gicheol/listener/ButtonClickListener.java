@@ -304,6 +304,8 @@ public class ButtonClickListener {
         panels.getMainSalesAmountField().replaceSelection("");
         panels.getMainSalesAmountFeeField().selectAll();
         panels.getMainSalesAmountFeeField().replaceSelection("");
+        panels.getMainDatePickerField().selectAll();
+        panels.getMainDatePickerField().replaceSelection("");
     }
 
 
