@@ -73,8 +73,7 @@ public class DrawUI {
      * @param jframe
      */
     private void setFaviconImage(JFrame jframe) {
-        Path path = Paths.get(Paths.get("").toAbsolutePath() + faviconPath);
-        ImageIcon favicon = new ImageIcon(path.toString());
+        ImageIcon favicon = getImageIcon("/favicon.png", 5, 5);
         jframe.setIconImage(favicon.getImage());
     }
 
@@ -84,9 +83,9 @@ public class DrawUI {
      * @param imagePath
      * @return
      */
-    private ImageIcon getImageIcon(String imagePath) {
+    private ImageIcon getImageIcon(String imagePath, int width, int height) {
         ImageIcon imageIcon = new ImageIcon(getClass().getResource(imagePath));
-        Image image = imageIcon.getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT);
+        Image image = imageIcon.getImage().getScaledInstance(width, height, Image.SCALE_DEFAULT);
         return new ImageIcon(image);
     }
 
@@ -99,9 +98,9 @@ public class DrawUI {
         JTextField salesAmountField = createJTextField(FontFactory.PLAIN_FONT_SIZE_20);
         JTextField salesAmountFeeField = createJTextField(FontFactory.PLAIN_FONT_SIZE_20);
         JTextField companyField = createJTextField(FontFactory.PLAIN_FONT_SIZE_20);
-        JTextField datePickerText = createJTextField(FontFactory.BOLD_FONT_SIZE_20);
+        JTextField datePickerText = createJTextField(FontFactory.PLAIN_FONT_SIZE_20);
         JLabel startCalendar = new JLabel();
-        startCalendar.setIcon(getImageIcon("/calendar.png"));
+        startCalendar.setIcon(getImageIcon("/calendar.png", 30, 30));
 
         panels.setMainSalesAmountField(salesAmountField);
         panels.setMainSalesAmountFeeField(salesAmountFeeField);
@@ -146,6 +145,7 @@ public class DrawUI {
     /**
      * 상단 판넬 설정
      * topText: 매출, 매출 수수료, 업체명
+     * topCalendar: 날짜 입력, Calendar
      * topButton: 매출 입력, 결과
      * buttonRow(topButton에 포함): 선택 매출 목록 삭제, 매출 목록 전체 삭제, 기록 전체 삭제, 히스토리 보기, 메시지 수정하기
      * saveFileButton(판넬 없음): 파일로 저장하기
