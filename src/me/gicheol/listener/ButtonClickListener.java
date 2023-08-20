@@ -65,7 +65,7 @@ public class ButtonClickListener {
             return;
         }
 
-        String amountFee = panels.getMainSalesAmountFeeField().getText().replaceAll(",", "");
+        String amountFee = panels.getMainSalesAmountFeeField().getText().replaceAll(",", "").replaceAll("%", "");
         if (amountFee.equals("")) {
             JOptionPane.showMessageDialog(null, "퍼센트를 입력하세요.");
         }
@@ -140,11 +140,11 @@ public class ButtonClickListener {
      * @param amountSB
      * @param sumAmount
      * @param amountFee
-     * @param percent
-     * @param resultAmount
+     * @param feeAmount
+     * @param vat
      * @return
      */
-    private StringBuilder resultMessage(StringBuilder amountSB, Long sumAmount, String amountFee, BigDecimal percent, BigDecimal resultAmount) {
+    private StringBuilder resultMessage(StringBuilder amountSB, Long sumAmount, String amountFee, BigDecimal feeAmount, BigDecimal vat) {
         String companyField = panels.getCompanyField().getText().equals("") ?
                 "" : panels.getCompanyField().getText() + "\n";
 
@@ -163,10 +163,10 @@ public class ButtonClickListener {
                 .append(CommonUtils.addCommaFormat(amountFee))
                 .append("% ")
                 .append("매출 수수료 정산 금액 - ")
-                .append(CommonUtils.addCommaWonFormat(percent))
+                .append(CommonUtils.addCommaWonFormat(feeAmount))
                 .append("\n")
                 .append("세금계산서 발행금액 - ")
-                .append(CommonUtils.addCommaWonFormat(resultAmount))
+                .append(CommonUtils.addCommaWonFormat(vat))
                 .append("\n\n")
                 .append(panels.getFooterMessage())
         ;
@@ -175,16 +175,15 @@ public class ButtonClickListener {
 
     /**
      * 검증 결과 메시지 생성
-     * @param nowDate
      * @param amountSB
      * @param amountAppend
      * @param sumAmount
      * @param amountFee
-     * @param percent
-     * @param resultAmount
+     * @param feeAmount
+     * @param vat
      * @return
      */
-    private StringBuilder verificationMessage(StringBuilder amountSB, String amountAppend, Long sumAmount, String amountFee, BigDecimal percent, BigDecimal resultAmount) {
+    private StringBuilder verificationMessage(StringBuilder amountSB, String amountAppend, Long sumAmount, String amountFee, BigDecimal feeAmount, BigDecimal vat) {
         String companyField = panels.getCompanyField().getText().equals("") ?
                 "" : panels.getCompanyField().getText() + "\n";
 
@@ -204,10 +203,10 @@ public class ButtonClickListener {
                 .append("매출 수수료 정산 금액 - ")
                 .append(CommonUtils.addCommaFormat(sumAmount) + " x " + amountFee + " / " + 100)
                 .append(" = ")
-                .append(CommonUtils.addCommaWonFormat(percent))
+                .append(CommonUtils.addCommaWonFormat(feeAmount))
                 .append("\n")
                 .append("세금계산서 발행금액 - ")
-                .append(CommonUtils.addCommaFormat(percent) + " x " + 1.1 + " = " + CommonUtils.addCommaWonFormat(resultAmount))
+                .append(CommonUtils.addCommaFormat(feeAmount) + " x " + 1.1 + " = " + CommonUtils.addCommaWonFormat(vat))
         ;
     }
 
