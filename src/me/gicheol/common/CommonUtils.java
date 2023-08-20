@@ -288,6 +288,14 @@ public class CommonUtils {
         }
     }
 
+    public static String formattingFeeFieldText(String textField) {
+        String replaceFeeFieldText = textField;
+        if (textField.contains("%")) {
+            replaceFeeFieldText = textField.replaceAll("%", "");
+        }
+        return formattingFieldText(replaceFeeFieldText) + "%";
+    }
+
 
     /**
      * 파라미터가 없는 이벤트 메서드 호출
