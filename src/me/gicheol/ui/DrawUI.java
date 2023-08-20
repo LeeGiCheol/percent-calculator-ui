@@ -73,10 +73,14 @@ public class DrawUI {
      * @param jframe
      */
     private void setFaviconImage(JFrame jframe) {
-        ImageIcon favicon = getImageIcon("/favicon.png", 5, 5);
+        ImageIcon favicon = getImageIconOrigin("/favicon.png");
         jframe.setIconImage(favicon.getImage());
     }
 
+
+    private ImageIcon getImageIconOrigin(String imagePath) {
+        return new ImageIcon(getClass().getResource(imagePath));
+    }
 
     /**
      * 이미지 가져오기
