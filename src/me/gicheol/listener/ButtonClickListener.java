@@ -5,7 +5,6 @@ import me.gicheol.controller.CalendarController;
 import me.gicheol.domain.Panels;
 import me.gicheol.controller.MessageUpdateDialogController;
 import me.gicheol.controller.PercentCalculatorController;
-import me.gicheol.ui.CalendarUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +12,6 @@ import java.awt.event.ActionEvent;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 
 
 /**

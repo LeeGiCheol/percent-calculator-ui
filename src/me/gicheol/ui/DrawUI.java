@@ -6,10 +6,6 @@ import me.gicheol.domain.Panels;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import static me.gicheol.domain.CustomComponent.*;
@@ -22,7 +18,6 @@ public class DrawUI {
 
     private final Panels panels;
     private final java.util.List<String> layoutLocation;
-    private final String faviconPath = "/resources/favicon.ico";
 
     public DrawUI(Panels panels) {
         this.panels = panels;
@@ -69,7 +64,6 @@ public class DrawUI {
 
     /**
      * Frame 파비콘 설정
-     * TODO: 현재 설정 안되는데 원인 파악 필요
      * @param jframe
      */
     private void setFaviconImage(JFrame jframe) {

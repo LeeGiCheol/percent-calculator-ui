@@ -3,7 +3,6 @@ package me.gicheol.listener;
 import me.gicheol.controller.CalendarController;
 import me.gicheol.domain.FontFactory;
 import me.gicheol.domain.Panels;
-import me.gicheol.ui.CalendarUI;
 
 import javax.swing.*;
 import java.awt.*;

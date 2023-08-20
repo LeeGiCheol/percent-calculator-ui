@@ -103,6 +103,7 @@ public class Panels {
     private String footerMessage;
     //////////////////////////////////////////
 
+    //////////////// Calendar ////////////////
     private JComboBox<Integer> yearCombo;
     private JComboBox<Integer> monthCombo;
     private JLabel selectedDay;
@@ -110,62 +111,7 @@ public class Panels {
     private JPanel cntCenter;
     private JButton lastMonth;
     private JButton nextMonth;
-
-    public JButton getLastMonth() {
-        return lastMonth;
-    }
-
-    public void setLastMonth(JButton lastMonth) {
-        this.lastMonth = lastMonth;
-    }
-
-    public JButton getNextMonth() {
-        return nextMonth;
-    }
-
-    public void setNextMonth(JButton nextMonth) {
-        this.nextMonth = nextMonth;
-    }
-
-    public JPanel getCntCenter() {
-        return cntCenter;
-    }
-
-    public void setCntCenter(JPanel cntCenter) {
-        this.cntCenter = cntCenter;
-    }
-
-    public JButton getCalendarSubmitButton() {
-        return calendarSubmitButton;
-    }
-
-    public void setCalendarSubmitButton(JButton calendarSubmitButton) {
-        this.calendarSubmitButton = calendarSubmitButton;
-    }
-
-    public JLabel getSelectedDay() {
-        return selectedDay;
-    }
-
-    public void setSelectedDay(JLabel selectedDay) {
-        this.selectedDay = selectedDay;
-    }
-
-    public JComboBox<Integer> getYearCombo() {
-        return yearCombo;
-    }
-
-    public void setYearCombo(JComboBox<Integer> yearCombo) {
-        this.yearCombo = yearCombo;
-    }
-
-    public JComboBox<Integer> getMonthCombo() {
-        return monthCombo;
-    }
-
-    public void setMonthCombo(JComboBox<Integer> monthCombo) {
-        this.monthCombo = monthCombo;
-    }
+    //////////////////////////////////////////
 
     public JPanel getMainTopPanel() {
         return mainTopPanel;
@@ -405,5 +351,61 @@ public class Panels {
 
     public void setFooterMessage(String footerMessage) {
         this.footerMessage = footerMessage;
+    }
+
+    public JComboBox<Integer> getYearCombo() {
+        return yearCombo;
+    }
+
+    public void setYearCombo(JComboBox<Integer> yearCombo) {
+        this.yearCombo = yearCombo;
+    }
+
+    public JComboBox<Integer> getMonthCombo() {
+        return monthCombo;
+    }
+
+    public void setMonthCombo(JComboBox<Integer> monthCombo) {
+        this.monthCombo = monthCombo;
+    }
+
+    public JLabel getSelectedDay() {
+        return selectedDay;
+    }
+
+    public void setSelectedDay(JLabel selectedDay) {
+        this.selectedDay = selectedDay;
+    }
+
+    public JButton getCalendarSubmitButton() {
+        return calendarSubmitButton;
+    }
+
+    public void setCalendarSubmitButton(JButton calendarSubmitButton) {
+        this.calendarSubmitButton = calendarSubmitButton;
+    }
+
+    public JPanel getCntCenter() {
+        return cntCenter;
+    }
+
+    public void setCntCenter(JPanel cntCenter) {
+        this.cntCenter = cntCenter;
+    }
+
+    public JButton getLastMonth() {
+        return lastMonth;
+    }
+
+    public void setLastMonth(JButton lastMonth) {
+        this.lastMonth = lastMonth;
+    }
+
+    public JButton getNextMonth() {
+        return nextMonth;
+    }
+
+    public void setNextMonth(JButton nextMonth) {
+        this.nextMonth = nextMonth;
     }
 }
