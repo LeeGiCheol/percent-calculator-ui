@@ -2,9 +2,6 @@ package me.gicheol.ui;
 
 import me.gicheol.domain.FontFactory;
 import me.gicheol.domain.Panels;
-import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
-import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
-import net.sourceforge.jdatepicker.impl.UtilDateModel;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -14,6 +11,8 @@ import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+
+import static me.gicheol.domain.CustomComponent.*;
 
 
 /**
@@ -77,6 +76,18 @@ public class DrawUI {
         Path path = Paths.get(Paths.get("").toAbsolutePath() + faviconPath);
         ImageIcon favicon = new ImageIcon(path.toString());
         jframe.setIconImage(favicon.getImage());
+    }
+
+
+    /**
+     * 이미지 가져오기
+     * @param imagePath
+     * @return
+     */
+    private ImageIcon getImageIcon(String imagePath) {
+        ImageIcon imageIcon = new ImageIcon(getClass().getResource(imagePath));
+        Image image = imageIcon.getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT);
+        return new ImageIcon(image);
     }
 
 
@@ -146,44 +157,31 @@ public class DrawUI {
      * 상단 텍스트 필드 판넬 설정
      */
     private void initTopText() {
-        JLabel amountLabel = new JLabel(" 매출 :", JLabel.LEFT);
-        JTextField salesAmountField = this.panels.getMainSalesAmountField();
-        JLabel salesAmountFee = new JLabel(" 매출 수수료 :", JLabel.LEFT);
-        JTextField salesAmountFeeField = this.panels.getMainSalesAmountFeeField();
-//        JLabel salesAmountFeePercentLabel = new JLabel("%", JLabel.LEFT);
-        JLabel companyLabel = new JLabel(" 업체명 :", JLabel.LEFT);
-        JTextField companyField = this.panels.getCompanyField();
-
-        amountLabel.setFont(FontFactory.BOLD_FONT_SIZE_20);
-        salesAmountField.setFont(FontFactory.PLAIN_FONT_SIZE_20);
-        salesAmountFee.setFont(FontFactory.BOLD_FONT_SIZE_20);
-        salesAmountFeeField.setFont(FontFactory.PLAIN_FONT_SIZE_20);
-//        salesAmountFeePercentLabel.setFont(FontFactory.PLAIN_FONT_SIZE_20);
-        companyLabel.setFont(FontFactory.BOLD_FONT_SIZE_20);
-        companyField.setFont(FontFactory.PLAIN_FONT_SIZE_20);
+        JLabel amountLabel = createJLabel(" 매출 :", FontFactory.BOLD_FONT_SIZE_20);
+        JTextField salesAmountField = createJTextField(FontFactory.PLAIN_FONT_SIZE_20);
+        JLabel salesAmountFee = createJLabel(" 매출 수수료 :", FontFactory.BOLD_FONT_SIZE_20);
+        JTextField salesAmountFeeField = createJTextField(FontFactory.PLAIN_FONT_SIZE_20);
+        JLabel companyLabel = createJLabel(" 업체명 :", FontFactory.BOLD_FONT_SIZE_20);
+        JTextField companyField = createJTextField(FontFactory.PLAIN_FONT_SIZE_20);
 
         JPanel topTextPanel = this.panels.getMainTopTextPanel();
         topTextPanel.add(amountLabel);
         topTextPanel.add(salesAmountField);
         topTextPanel.add(salesAmountFee);
         topTextPanel.add(salesAmountFeeField);
-//        topTextPanel.add(salesAmountFeePercentLabel);
         topTextPanel.add(companyLabel);
         topTextPanel.add(companyField);
 
+        panels.setMainSalesAmountField(salesAmountField);
+        panels.setMainSalesAmountFeeField(salesAmountFeeField);
+        panels.setCompanyField(companyField);
 
         ///
-        JLabel comp = new JLabel(" 날짜 입력 :");
-        comp.setFont(FontFactory.BOLD_FONT_SIZE_20);
-        topTextPanel.add(comp);
+        JLabel datePickerLabel = createJLabel(" 날짜 입력 :", FontFactory.BOLD_FONT_SIZE_20);
+        topTextPanel.add(datePickerLabel);
 
         JLabel startCalendar = new JLabel();
-        ImageIcon icon = new ImageIcon(getClass().getResource("/calendar.png"));
-        Image img = icon.getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT);
-        ImageIcon icon2 = new ImageIcon(img);
-
-
-        startCalendar.setIcon(icon2);
+        startCalendar.setIcon(getImageIcon("/calendar.png"));
         startCalendar.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -191,7 +189,7 @@ public class DrawUI {
                 calendarUI.callCalendar();
             }
         });
-        JTextField datePickerText = new JTextField();
+        JTextField datePickerText = createJTextField(FontFactory.BOLD_FONT_SIZE_20);
         panels.setDatePickerText(datePickerText);
         topTextPanel.add(panels.getDatePickerText());
 
@@ -202,15 +200,14 @@ public class DrawUI {
     }
 
 
+
+
     /**
      * 상단 버튼 판넬 설정 (최 상단)
      */
     private void initTopButton() {
-        JButton salesAddButton = new JButton("매출 입력");
-        JButton submitButton = new JButton("결과");
-
-        salesAddButton.setFont(FontFactory.BOLD_FONT_SIZE_20);
-        submitButton.setFont(FontFactory.BOLD_FONT_SIZE_20);
+        JButton salesAddButton = createJButton("매출 입력", FontFactory.BOLD_FONT_SIZE_20);
+        JButton submitButton = createJButton("결과", FontFactory.BOLD_FONT_SIZE_20);
 
         JPanel topTextPanel = this.panels.getMainTopTextPanel();
 
@@ -226,17 +223,11 @@ public class DrawUI {
      * 상단 버튼 Row 설정 (상단 두 번째)
      */
     private void initButtonRow() {
-        JButton selectResultRemoveButton = new JButton("선택 매출 목록 삭제");
-        JButton allResultRemoveButton = new JButton("매출 목록 전체 삭제");
-        JButton allRemoveButton = new JButton("기록 전체 삭제");
-        JButton historyButton = new JButton("히스토리 보기");
-        JButton messageUpdateButton = new JButton("메시지 수정하기");
-
-        selectResultRemoveButton.setFont(FontFactory.PLAIN_FONT_SIZE_20);
-        allRemoveButton.setFont(FontFactory.PLAIN_FONT_SIZE_20);
-        allResultRemoveButton.setFont(FontFactory.PLAIN_FONT_SIZE_20);
-        historyButton.setFont(FontFactory.PLAIN_FONT_SIZE_20);
-        messageUpdateButton.setFont(FontFactory.PLAIN_FONT_SIZE_20);
+        JButton selectResultRemoveButton = createJButton("선택 매출 목록 삭제", FontFactory.PLAIN_FONT_SIZE_20);
+        JButton allResultRemoveButton = createJButton("매출 목록 전체 삭제", FontFactory.PLAIN_FONT_SIZE_20);
+        JButton allRemoveButton = createJButton("기록 전체 삭제", FontFactory.PLAIN_FONT_SIZE_20);
+        JButton historyButton = createJButton("히스토리 보기", FontFactory.PLAIN_FONT_SIZE_20);
+        JButton messageUpdateButton = createJButton("메시지 수정하기", FontFactory.PLAIN_FONT_SIZE_20);
 
         JPanel topButtonPanel = this.panels.getMainTopButtonPanel();
         topButtonPanel.add(selectResultRemoveButton);
@@ -257,9 +248,7 @@ public class DrawUI {
      * 파일로 저장하기 버튼 설정 (세 번째)
      */
     private void initSaveFileButton() {
-        JButton saveFileButton = new JButton("파일로 저장하기");
-        saveFileButton.setFont(FontFactory.PLAIN_FONT_SIZE_20);
-
+        JButton saveFileButton = createJButton("파일로 저장하기", FontFactory.PLAIN_FONT_SIZE_20);
         this.panels.setMainSaveFileButton(saveFileButton);
     }
 
@@ -283,13 +272,9 @@ public class DrawUI {
     private void initResultLabel() {
         JPanel resultLabelPanel = new JPanel(new GridLayout(1, 1));
 
-        JLabel amountListLabel = new JLabel("매출 목록");
-        JLabel resultTextAreaLabel = new JLabel("결과");
-        JLabel resultTextAreaVerificationLabel = new JLabel("검증");
-
-        resultTextAreaVerificationLabel.setFont(FontFactory.BOLD_FONT_SIZE_20);
-        resultTextAreaLabel.setFont(FontFactory.BOLD_FONT_SIZE_20);
-        amountListLabel.setFont(FontFactory.BOLD_FONT_SIZE_20);
+        JLabel amountListLabel = createJLabel("매출 목록", FontFactory.BOLD_FONT_SIZE_20);
+        JLabel resultTextAreaLabel = createJLabel("결과", FontFactory.BOLD_FONT_SIZE_20);
+        JLabel resultTextAreaVerificationLabel = createJLabel("검증", FontFactory.BOLD_FONT_SIZE_20);
 
         resultLabelPanel.add(amountListLabel);
         resultLabelPanel.add(resultTextAreaLabel);
@@ -319,8 +304,8 @@ public class DrawUI {
         List amountList = this.panels.getSalesAmountList();
         amountList.setFont(FontFactory.PLAIN_FONT_SIZE_20);
 
-        JTextArea resultTextArea = getTextAreaScrollPane();
-        JTextArea resultTextAreaVerification = getTextAreaScrollPane();
+        JTextArea resultTextArea = createJTextArea(FontFactory.PLAIN_FONT_SIZE_20, Color.GRAY);
+        JTextArea resultTextAreaVerification = createJTextArea(FontFactory.PLAIN_FONT_SIZE_20, Color.GRAY);
         JScrollPane resultTextAreaScrollPane = new JScrollPane(resultTextArea);
         JScrollPane resultTextAreaVerificationScrollPane = new JScrollPane(resultTextAreaVerification);
 
@@ -335,19 +320,6 @@ public class DrawUI {
         this.panels.setMainResultTextAreaVerification(resultTextAreaVerification);
 
         return textAreaPanel;
-    }
-
-
-    /**
-     * TextArea Scroll 추가
-     * @return
-     */
-    private static JTextArea getTextAreaScrollPane() {
-        JTextArea textArea = new JTextArea();
-        textArea.setFont(FontFactory.PLAIN_FONT_SIZE_20);
-        textArea.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-
-        return textArea;
     }
 
 
@@ -371,11 +343,8 @@ public class DrawUI {
      */
     private JPanel messageUpdateDialogTopLabel() {
         JPanel labelPanel = new JPanel(new GridLayout(1, 2));
-        JLabel headerLabel = new JLabel("상단 메시지");
-        JLabel footerLabel = new JLabel("하단 메시지");
-
-        headerLabel.setFont(FontFactory.PLAIN_FONT_SIZE_20);
-        footerLabel.setFont(FontFactory.PLAIN_FONT_SIZE_20);
+        JLabel headerLabel = createJLabel("상단 메시지", FontFactory.PLAIN_FONT_SIZE_20);
+        JLabel footerLabel = createJLabel("하단 메시지", FontFactory.PLAIN_FONT_SIZE_20);
 
         labelPanel.add(headerLabel);
         labelPanel.add(footerLabel);
@@ -390,16 +359,12 @@ public class DrawUI {
      */
     private JPanel messageUpdateDialogMessagePanel() {
         JPanel messagePanel = new JPanel(new GridLayout(1, 2));
-        JTextArea header = new JTextArea();
-        JTextArea footer = new JTextArea();
+        JTextArea header = createJTextArea(FontFactory.getFont(Font.PLAIN, 15), Color.GRAY);
+        JTextArea footer = createJTextArea(FontFactory.getFont(Font.PLAIN, 15), Color.GRAY);
 
         header.append(panels.getHeaderMessage());
         footer.append(panels.getFooterMessage());
 
-        header.setFont(FontFactory.getFont(Font.PLAIN, 15));
-        header.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        footer.setFont(FontFactory.getFont(Font.PLAIN, 15));
-        footer.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 
         JScrollPane headerScrollPane = new JScrollPane(header);
         JScrollPane footerScrollPane = new JScrollPane(footer);
@@ -420,10 +385,8 @@ public class DrawUI {
      */
     private JPanel messageUpdateFooterPanel() {
         JPanel footerPanel = new JPanel(new GridLayout(1, 2));
-        JButton submitButton = new JButton("변경하기");
-        JButton cancelButton = new JButton("나가기");
-        submitButton.setFont(FontFactory.PLAIN_FONT_SIZE_20);
-        cancelButton.setFont(FontFactory.PLAIN_FONT_SIZE_20);
+        JButton submitButton = createJButton("변경하기", FontFactory.PLAIN_FONT_SIZE_20);
+        JButton cancelButton = createJButton("나가기", FontFactory.PLAIN_FONT_SIZE_20);
 
         footerPanel.add(submitButton);
         footerPanel.add(cancelButton);
