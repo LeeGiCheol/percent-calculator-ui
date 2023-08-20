@@ -49,6 +49,4 @@ public class KeyInputListenerFactory extends KeyAdapter {
         CommonUtils.callEventMethod(KeyInputListener.class, panels, eventMethodName, params, paramTypes);
     }
 
-
-
 }

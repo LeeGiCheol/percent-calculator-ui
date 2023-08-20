@@ -2,6 +2,7 @@ package me.gicheol.controller;
 
 import me.gicheol.common.CommonUtils;
 import me.gicheol.domain.Panels;
+import me.gicheol.listener.MouseClickListener;
 import me.gicheol.ui.DrawUI;
 
 import javax.swing.*;
@@ -36,6 +37,7 @@ public class PercentCalculatorController extends JFrame {
     private void addListener(Panels panels) {
         CommonUtils.addListener(this, null, panels, "Main", "Field");
         CommonUtils.addListener(this, null, panels, "Main", "Button");
+        panels.getStartCalendar().addMouseListener(new MouseClickListener(panels));
     }
 
 }
