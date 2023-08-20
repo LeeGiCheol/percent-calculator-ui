@@ -84,18 +84,17 @@ public class ButtonClickListener {
             amountListMessage.append(item).append("|");
         }
 
-        String nowDate = LocalDate.now().format(dateFormat);
         BigDecimal feeAmount = CommonUtils.calculateFeeAmount(sumAmount, amountFee);
         BigDecimal vat = CommonUtils.calculateVAT(feeAmount);
 
-        StringBuilder resultMessage = resultMessage(nowDate, amountListMessageAppendSales, sumAmount, amountFee, feeAmount, vat);
+        StringBuilder resultMessage = resultMessage(amountListMessageAppendSales, sumAmount, amountFee, feeAmount, vat);
 
         panels.getMainResultTextArea().append(resultMessage.toString());
         panels.getHistory().add(resultMessage.toString());
 
         String verificationAmountMessage = verificationAmountMessage(amountListMessage);
 
-        StringBuilder verification = verificationMessage(nowDate, amountListMessageAppendSales, verificationAmountMessage, sumAmount, amountFee, feeAmount, vat);
+        StringBuilder verification = verificationMessage(amountListMessageAppendSales, verificationAmountMessage, sumAmount, amountFee, feeAmount, vat);
 
         panels.getMainResultTextAreaVerification().append(verification.toString());
         panels.getVerificationHistory().add(verification.toString());
@@ -138,7 +137,6 @@ public class ButtonClickListener {
 
     /**
      * 결과 메시지 생성
-     * @param nowDate
      * @param amountSB
      * @param sumAmount
      * @param amountFee
@@ -146,15 +144,16 @@ public class ButtonClickListener {
      * @param resultAmount
      * @return
      */
-    private StringBuilder resultMessage(String nowDate, StringBuilder amountSB, Long sumAmount, String amountFee, BigDecimal percent, BigDecimal resultAmount) {
+    private StringBuilder resultMessage(StringBuilder amountSB, Long sumAmount, String amountFee, BigDecimal percent, BigDecimal resultAmount) {
         String companyField = panels.getCompanyField().getText().equals("") ?
                 "" : panels.getCompanyField().getText() + "\n";
+
 
         return new StringBuilder()
                 .append(companyField)
                 .append(panels.getHeaderMessage())
                 .append("\n\n")
-                .append(nowDate)
+                .append(inputDateIsNullNowDate())
                 .append("\n")
                 .append(amountSB)
                 .append("\n")
@@ -185,13 +184,13 @@ public class ButtonClickListener {
      * @param resultAmount
      * @return
      */
-    private StringBuilder verificationMessage(String nowDate, StringBuilder amountSB, String amountAppend, Long sumAmount, String amountFee, BigDecimal percent, BigDecimal resultAmount) {
+    private StringBuilder verificationMessage(StringBuilder amountSB, String amountAppend, Long sumAmount, String amountFee, BigDecimal percent, BigDecimal resultAmount) {
         String companyField = panels.getCompanyField().getText().equals("") ?
                 "" : panels.getCompanyField().getText() + "\n";
 
         return new StringBuilder()
                 .append(companyField)
-                .append(nowDate)
+                .append(inputDateIsNullNowDate())
                 .append("\n")
                 .append(amountSB)
                 .append("\n")
@@ -210,6 +209,19 @@ public class ButtonClickListener {
                 .append("세금계산서 발행금액 - ")
                 .append(CommonUtils.addCommaFormat(percent) + " x " + 1.1 + " = " + CommonUtils.addCommaWonFormat(resultAmount))
         ;
+    }
+
+
+    /**
+     * 날짜를 작성했다면 작성한 날짜, 아니면 오늘 날짜를 반환
+     * @return
+     */
+    private String inputDateIsNullNowDate() {
+        if (panels.getDatePickerText().getText().equals("")) {
+            return LocalDate.now().format(dateFormat);
+        } else {
+            return panels.getDatePickerText().getText();
+        }
     }
 
 
