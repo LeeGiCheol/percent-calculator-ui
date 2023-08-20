@@ -96,9 +96,18 @@ public class DrawUI {
      * @return
      */
     public Panels setDefaultPanels() {
-        panels.setMainSalesAmountField(new JTextField());
-        panels.setMainSalesAmountFeeField(new JTextField());
-        panels.setCompanyField(new JTextField());
+        JTextField salesAmountField = createJTextField(FontFactory.PLAIN_FONT_SIZE_20);
+        JTextField salesAmountFeeField = createJTextField(FontFactory.PLAIN_FONT_SIZE_20);
+        JTextField companyField = createJTextField(FontFactory.PLAIN_FONT_SIZE_20);
+        JTextField datePickerText = createJTextField(FontFactory.BOLD_FONT_SIZE_20);
+        JLabel startCalendar = new JLabel();
+        startCalendar.setIcon(getImageIcon("/calendar.png"));
+
+        panels.setMainSalesAmountField(salesAmountField);
+        panels.setMainSalesAmountFeeField(salesAmountFeeField);
+        panels.setCompanyField(companyField);
+        panels.setDatePickerText(datePickerText);
+        panels.setStartCalendar(startCalendar);
 
         JFileChooser saveFileChooser = new JFileChooser();
         saveFileChooser.setFileFilter(new FileNameExtensionFilter("txt", "txt"));
@@ -145,6 +154,7 @@ public class DrawUI {
      */
     public void initTopPanel() {
         initTopText();
+        initTopCalendar();
         initTopButton();
         initButtonRow();
         initSaveFileButton();
@@ -158,11 +168,11 @@ public class DrawUI {
      */
     private void initTopText() {
         JLabel amountLabel = createJLabel(" 매출 :", FontFactory.BOLD_FONT_SIZE_20);
-        JTextField salesAmountField = createJTextField(FontFactory.PLAIN_FONT_SIZE_20);
+        JTextField salesAmountField = panels.getMainSalesAmountField();
         JLabel salesAmountFee = createJLabel(" 매출 수수료 :", FontFactory.BOLD_FONT_SIZE_20);
-        JTextField salesAmountFeeField = createJTextField(FontFactory.PLAIN_FONT_SIZE_20);
+        JTextField salesAmountFeeField = panels.getMainSalesAmountFeeField();
         JLabel companyLabel = createJLabel(" 업체명 :", FontFactory.BOLD_FONT_SIZE_20);
-        JTextField companyField = createJTextField(FontFactory.PLAIN_FONT_SIZE_20);
+        JTextField companyField = panels.getCompanyField();
 
         JPanel topTextPanel = this.panels.getMainTopTextPanel();
         topTextPanel.add(amountLabel);
@@ -175,31 +185,24 @@ public class DrawUI {
         panels.setMainSalesAmountField(salesAmountField);
         panels.setMainSalesAmountFeeField(salesAmountFeeField);
         panels.setCompanyField(companyField);
-
-        ///
-        JLabel datePickerLabel = createJLabel(" 날짜 입력 :", FontFactory.BOLD_FONT_SIZE_20);
-        topTextPanel.add(datePickerLabel);
-
-        JLabel startCalendar = new JLabel();
-        startCalendar.setIcon(getImageIcon("/calendar.png"));
-        startCalendar.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                CalendarUI calendarUI = new CalendarUI(panels);
-                calendarUI.callCalendar();
-            }
-        });
-        JTextField datePickerText = createJTextField(FontFactory.BOLD_FONT_SIZE_20);
-        panels.setDatePickerText(datePickerText);
-        topTextPanel.add(panels.getDatePickerText());
-
-        topTextPanel.add(startCalendar);
-
-        ///
-
     }
 
 
+    /**
+     * 상단 Calendar 관련 설정
+     */
+    private void initTopCalendar() {
+        JPanel topTextPanel = panels.getMainTopTextPanel();
+
+        JLabel datePickerLabel = createJLabel(" 날짜 입력 :", FontFactory.BOLD_FONT_SIZE_20);
+
+        JTextField datePickerText = panels.getDatePickerText();
+        JLabel startCalendar = panels.getStartCalendar();
+
+        topTextPanel.add(datePickerLabel);
+        topTextPanel.add(panels.getDatePickerText());
+        topTextPanel.add(startCalendar);
+    }
 
 
     /**

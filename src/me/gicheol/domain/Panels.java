@@ -75,6 +75,7 @@ public class Panels {
 
     private JTextField datePickerText;
 
+    private JLabel startCalendar;
 
     /////  MessageUpdateDialogController /////
     // 변경하기 버튼
@@ -319,5 +320,13 @@ public class Panels {
 
     public void setDatePickerText(JTextField datePickerText) {
         this.datePickerText = datePickerText;
+    }
+
+    public JLabel getStartCalendar() {
+        return startCalendar;
+    }
+
+    public void setStartCalendar(JLabel startCalendar) {
+        this.startCalendar = startCalendar;
     }
 }
