@@ -18,8 +18,10 @@ public class MouseClickListener extends MouseAdapter {
     @Override
     public void mouseClicked(MouseEvent e) {
         super.mouseClicked(e);
-        CalendarUI calendarUI = new CalendarUI(panels);
-        calendarUI.callCalendar();
+        if (!panels.isShowDatePicker()) {
+            CalendarUI calendarUI = new CalendarUI(panels);
+            calendarUI.callCalendar();
+        }
     }
 
 }

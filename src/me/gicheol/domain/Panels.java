@@ -73,9 +73,15 @@ public class Panels {
     // 검증 리스트
     private java.util.List<String> verificationHistory = new ArrayList<>();
 
-    private JTextField datePickerText;
+    // DatePicker 현재 노출 유무
+    private boolean showDatePicker;
 
+    // DatePicker 날짜 input
+    private JTextField mainDatePickerField;
+
+    // DatePicker 실행 이미지
     private JLabel startCalendar;
+
 
     /////  MessageUpdateDialogController /////
     // 변경하기 버튼
@@ -266,6 +272,30 @@ public class Panels {
         this.verificationHistory = verificationHistory;
     }
 
+    public boolean isShowDatePicker() {
+        return showDatePicker;
+    }
+
+    public void setShowDatePicker(boolean showDatePicker) {
+        this.showDatePicker = showDatePicker;
+    }
+
+    public JTextField getMainDatePickerField() {
+        return mainDatePickerField;
+    }
+
+    public void setMainDatePickerField(JTextField mainDatePickerField) {
+        this.mainDatePickerField = mainDatePickerField;
+    }
+
+    public JLabel getStartCalendar() {
+        return startCalendar;
+    }
+
+    public void setStartCalendar(JLabel startCalendar) {
+        this.startCalendar = startCalendar;
+    }
+
     public JButton getMessageUpdateDialogSubmitButton() {
         return messageUpdateDialogSubmitButton;
     }
@@ -312,21 +342,5 @@ public class Panels {
 
     public void setFooterMessage(String footerMessage) {
         this.footerMessage = footerMessage;
-    }
-
-    public JTextField getDatePickerText() {
-        return datePickerText;
-    }
-
-    public void setDatePickerText(JTextField datePickerText) {
-        this.datePickerText = datePickerText;
-    }
-
-    public JLabel getStartCalendar() {
-        return startCalendar;
-    }
-
-    public void setStartCalendar(JLabel startCalendar) {
-        this.startCalendar = startCalendar;
     }
 }

@@ -216,10 +216,10 @@ public class ButtonClickListener {
      * @return
      */
     private String inputDateIsNullNowDate() {
-        if (panels.getDatePickerText().getText().equals("")) {
+        if (panels.getMainDatePickerField().getText().equals("")) {
             return LocalDate.now().format(dateFormat);
         } else {
-            return panels.getDatePickerText().getText();
+            return panels.getMainDatePickerField().getText();
         }
     }
 
