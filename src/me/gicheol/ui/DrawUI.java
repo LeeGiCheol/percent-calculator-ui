@@ -106,7 +106,7 @@ public class DrawUI {
         panels.setMainSalesAmountField(salesAmountField);
         panels.setMainSalesAmountFeeField(salesAmountFeeField);
         panels.setCompanyField(companyField);
-        panels.setDatePickerText(datePickerText);
+        panels.setMainDatePickerField(datePickerText);
         panels.setStartCalendar(startCalendar);
 
         JFileChooser saveFileChooser = new JFileChooser();
@@ -196,11 +196,10 @@ public class DrawUI {
 
         JLabel datePickerLabel = createJLabel(" 날짜 입력 :", FontFactory.BOLD_FONT_SIZE_20);
 
-        JTextField datePickerText = panels.getDatePickerText();
         JLabel startCalendar = panels.getStartCalendar();
 
         topTextPanel.add(datePickerLabel);
-        topTextPanel.add(panels.getDatePickerText());
+        topTextPanel.add(panels.getMainDatePickerField());
         topTextPanel.add(startCalendar);
     }
 

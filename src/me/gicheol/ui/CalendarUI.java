@@ -35,9 +35,6 @@ public class CalendarUI extends JFrame implements ActionListener, WindowListener
 
     JLabel selectedDay = new JLabel();
 
-
-
-
     Calendar now = Calendar.getInstance();
     int year, month, date;
 
@@ -104,17 +101,24 @@ public class CalendarUI extends JFrame implements ActionListener, WindowListener
         monthCombo.addActionListener(this);
         lastMonth.addActionListener(this);
         nextMonth.addActionListener(this);
+
         submitButton.addActionListener(e -> {
+            String selectMonth = monthCombo.getSelectedItem().toString();
             String selectDay= selectedDay.getText();
-            String selectMonth = ""+monthCombo.getSelectedItem();
 
-            // 받은 "요일"이 1자리면 0을 붙여라
-            if(selectDay.equals("")) ;
-            else if(selectDay.length()==1) selectDay = "0"+selectDay;
+            if (selectMonth.length() == 1) {
+                selectMonth = "0"+ selectMonth;
+            }
+            if (selectDay.length() == 1) {
+                selectDay = "0"+selectDay;
+            }
 
-            // 받은 "월"이 1자리면 0을 붙여라
-            if(selectMonth.length()==1) selectMonth = "0"+ selectMonth;
-            panels.getDatePickerText().setText(selectMonth+"/"+selectDay);
+            if (selectMonth.length() == 0 || selectDay.length() == 0) {
+                return;
+            }
+
+            panels.getMainDatePickerField().setText(selectMonth+"/"+selectDay);
+            panels.setShowDatePicker(false);
 
             setVisible(false);
         });
@@ -173,22 +177,22 @@ public class CalendarUI extends JFrame implements ActionListener, WindowListener
         cal.set(y, m-1, 1);
         int week = cal.get(Calendar.DAY_OF_WEEK); // 1일에 대한 요일
         int lastDate = cal.getActualMaximum(Calendar.DAY_OF_MONTH); // 1월에 대한 마지막 요일
-        for(int i =1; i<week; i++) { // 1월 1일 전까지 공백을 표시해라
+        for (int i = 1; i < week; i++) { // 1월 1일 전까지 공백을 표시해라
             cntCenter.add(new JLabel(""));
         }
 
-        for(int i =0;i<=lastDate-1;i++) { // 1월 마지막 날까지 숫자를 적어라, 그리고 토요일 일요일은 색깔을 입혀라
+        for (int i = 0; i <= lastDate-1; i++) { // 1월 마지막 날까지 숫자를 적어라, 그리고 토요일 일요일은 색깔을 입혀라
             JLabel day = new JLabel();
             day.setHorizontalAlignment(JLabel.CENTER);
-            if((week+i)%7==0) {
+            if((week+i) % 7 == 0) {
                 cntCenter.add(day).setForeground(Color.blue);
-                day.setText(1+i+"");
-            } else if((week+i)%7==1) {
+                day.setText(String.valueOf(1 + i));
+            } else if((week+i) % 7 == 1) {
                 cntCenter.add(day).setForeground(Color.red);
-                day.setText(1+i+"");
+                day.setText(String.valueOf(1 + i));
             } else {
                 cntCenter.add(day);
-                day.setText(1+i+"");
+                day.setText(String.valueOf(1 + i));
             }
             day.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent me) {
@@ -205,12 +209,14 @@ public class CalendarUI extends JFrame implements ActionListener, WindowListener
     }
 
     public void windowOpened(WindowEvent e) {
-//        calendarWindowTest = 1;
+        panels.setShowDatePicker(true);
     }
     public void windowClosing(WindowEvent e) {
-//        calendarWindowTest = 0;
+        panels.setShowDatePicker(false);
     }
-    public void windowClosed(WindowEvent e) {}
+    public void windowClosed(WindowEvent e) {
+        panels.setShowDatePicker(false);
+    }
     public void windowIconified(WindowEvent e) {}
     public void windowDeiconified(WindowEvent e) {}
     public void windowActivated(WindowEvent e) {}
